@@ -26,6 +26,7 @@ RUN apt-get update \
     procps \
     zlib1g-dev \
     libjemalloc-dev \
+    imagemagick \
   && rm -rf /var/lib/apt/lists/*
 
 # skip installing gem documentation
