@@ -36,9 +36,9 @@ RUN mkdir -p /usr/local/etc \
     echo 'update: --no-document'; \
   } >> /usr/local/etc/gemrc
 
-ENV RUBY_MAJOR 2.5
-ENV RUBY_VERSION 2.5.1
-ENV RUBY_DOWNLOAD_SHA256 dac81822325b79c3ba9532b048c2123357d3310b2b40024202f360251d9829b1
+ENV RUBY_MAJOR 2.6
+ENV RUBY_VERSION 2.6.2
+ENV RUBY_DOWNLOAD_SHA256 a0405d2bf2c2d2f332033b70dff354d224a864ab0edd462b7a413420453b49ab
 ENV RUBYGEMS_VERSION 2.7.7
 
 # some of ruby's build scripts are written in ruby
