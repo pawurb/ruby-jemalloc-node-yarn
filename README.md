@@ -1,2 +1,2 @@
-## Docker image of Ruby 2.6.2 with Jemalloc Node 8 LTS and Yarn
+## Docker image of Ruby 2.6.2 with Jemalloc Node 10 LTS and Yarn
 
