@@ -101,3 +101,17 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources
 RUN apt-get update
 RUN apt-get install -y openssl libpq-dev build-essential libcurl4-openssl-dev software-properties-common
 
+# Download & extract & make libsodium
+ENV LIBSODIUM_VERSION 1.0.18
+RUN apt-get install build-essential
+RUN \
+    mkdir -p /tmpbuild/libsodium && \
+    cd /tmpbuild/libsodium && \
+    curl -L https://download.libsodium.org/libsodium/releases/libsodium-${LIBSODIUM_VERSION}.tar.gz -o libsodium-${LIBSODIUM_VERSION}.tar.gz && \
+    tar xfvz libsodium-${LIBSODIUM_VERSION}.tar.gz && \
+    cd /tmpbuild/libsodium/libsodium-${LIBSODIUM_VERSION}/ && \
+    ./configure && \
+    make && make check && \
+    make install && \
+    mv src/libsodium /usr/local/ && \
+    rm -Rf /tmpbuild/
