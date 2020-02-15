@@ -115,3 +115,8 @@ RUN \
     make install && \
     mv src/libsodium /usr/local/ && \
     rm -Rf /tmpbuild/
+
+
+# Add postgresql client
+RUN apt-get -y install postgresql-client
+
