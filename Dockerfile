@@ -117,6 +117,14 @@ RUN \
     rm -Rf /tmpbuild/
 
 
+RUN apt-get -y install wget
 # Add postgresql client
-RUN apt-get -y install postgresql-client
+
+RUN sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -sc)-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list'
+
+RUN wget https://www.postgresql.org/media/keys/ACCC4CF8.asc
+RUN apt-key add ACCC4CF8.asc
+RUN apt-get update
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get -y install postgresql-11
 
