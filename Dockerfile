@@ -128,3 +128,10 @@ RUN apt-get update
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -y install postgresql-11
 
+# Add AWS CLI
+RUN apt-get -u install unzip
+RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+RUN unzip awscliv2.zip
+RUN ./aws/install
+
+
