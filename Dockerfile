@@ -87,7 +87,7 @@ ENV PATH $BUNDLE_BIN:$PATH
 RUN mkdir -p "$GEM_HOME" "$BUNDLE_BIN" \
 && chmod 777 "$GEM_HOME" "$BUNDLE_BIN"
 
-RUN gem install bundler
+RUN gem install bundler -v 2.1.4
 RUN apt-get update
 RUN apt-get -y install curl
 RUN apt-get install -my gnupg
