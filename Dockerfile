@@ -36,10 +36,10 @@ RUN mkdir -p /usr/local/etc \
     echo 'update: --no-document'; \
   } >> /usr/local/etc/gemrc
 
-ENV RUBY_MAJOR 2.7
-ENV RUBY_VERSION 2.7.3
-ENV RUBY_DOWNLOAD_SHA256 8925a95e31d8f2c81749025a52a544ea1d05dad18794e6828709268b92e55338
-ENV RUBYGEMS_VERSION 3.2.17
+ENV RUBY_MAJOR 3.1
+ENV RUBY_VERSION 3.1.0
+ENV RUBY_DOWNLOAD_SHA256 50a0504c6edcb4d61ce6b8cfdbddaa95707195fab0ecd7b5e92654b2a9412854
+ENV RUBYGEMS_VERSION 3.3.7
 
 # some of ruby's build scripts are written in ruby
 # we purge this later to make sure our final image uses what we just built
@@ -91,7 +91,7 @@ RUN gem install bundler -v 2.1.4
 RUN apt-get update
 RUN apt-get -y install curl
 RUN apt-get install -my gnupg
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get -qqyy install nodejs yarn && rm -rf /var/lib/apt/lists/*
