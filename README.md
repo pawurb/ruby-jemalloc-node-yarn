@@ -2,3 +2,16 @@
 
 [Docker Hub](https://hub.docker.com/repository/docker/pawurb/ruby-jemalloc-node-yarn)
 
+## How to release
+
+```bash
+
+docker build .
+docker images
+docker tag IMAGE_ID pawurb/ruby-jemalloc-node-yarn:latest
+docker tag IMAGE_ID pawurb/ruby-jemalloc-node-yarn:3.1.0
+docker push pawurb/ruby-jemalloc-node-yarn:latest
+docker push pawurb/ruby-jemalloc-node-yarn:3.1.0
+
+```
+
