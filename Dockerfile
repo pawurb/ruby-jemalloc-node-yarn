@@ -37,9 +37,9 @@ RUN mkdir -p /usr/local/etc \
   } >> /usr/local/etc/gemrc
 
 ENV RUBY_MAJOR 3.1
-ENV RUBY_VERSION 3.1.0
-ENV RUBY_DOWNLOAD_SHA256 50a0504c6edcb4d61ce6b8cfdbddaa95707195fab0ecd7b5e92654b2a9412854
-ENV RUBYGEMS_VERSION 3.3.7
+ENV RUBY_VERSION 3.1.2
+ENV RUBY_DOWNLOAD_SHA256 61843112389f02b735428b53bb64cf988ad9fb81858b8248e22e57336f24a83e
+ENV RUBYGEMS_VERSION 3.3.13
 
 # some of ruby's build scripts are written in ruby
 # we purge this later to make sure our final image uses what we just built
@@ -87,7 +87,7 @@ ENV PATH $BUNDLE_BIN:$PATH
 RUN mkdir -p "$GEM_HOME" "$BUNDLE_BIN" \
 && chmod 777 "$GEM_HOME" "$BUNDLE_BIN"
 
-RUN gem install bundler -v 2.1.4
+RUN gem install bundler -v 2.3.13
 RUN apt-get update
 RUN apt-get -y install curl
 RUN apt-get install -my gnupg
