@@ -91,7 +91,7 @@ RUN gem install bundler -v 2.3.13
 RUN apt-get update
 RUN apt-get -y install curl
 RUN apt-get install -my gnupg
-RUN curl -sL https://deb.nodesource.com/setup_16.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update && apt-get -qqyy install nodejs yarn && rm -rf /var/lib/apt/lists/*
@@ -126,7 +126,7 @@ RUN wget https://www.postgresql.org/media/keys/ACCC4CF8.asc
 RUN apt-key add ACCC4CF8.asc
 RUN apt-get update
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get -y install postgresql-14
+RUN apt-get -y install postgresql-15
 
 # Add AWS CLI
 RUN apt-get -u install unzip
