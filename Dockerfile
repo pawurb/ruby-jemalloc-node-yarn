@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 ENV MIRROR="mirrors.ocf.berkeley.edu"
 
@@ -36,10 +36,10 @@ RUN mkdir -p /usr/local/etc \
     echo 'update: --no-document'; \
   } >> /usr/local/etc/gemrc
 
-ENV RUBY_MAJOR 3.1
-ENV RUBY_VERSION 3.1.2
-ENV RUBY_DOWNLOAD_SHA256 61843112389f02b735428b53bb64cf988ad9fb81858b8248e22e57336f24a83e
-ENV RUBYGEMS_VERSION 3.5.4
+ENV RUBY_MAJOR 3.3
+ENV RUBY_VERSION 3.3.5
+ENV RUBY_DOWNLOAD_SHA256 3781a3504222c2f26cb4b9eb9c1a12dbf4944d366ce24a9ff8cf99ecbce75196
+ENV RUBYGEMS_VERSION 3.5.16
 
 # some of ruby's build scripts are written in ruby
 # we purge this later to make sure our final image uses what we just built
@@ -87,7 +87,7 @@ ENV PATH $BUNDLE_BIN:$PATH
 RUN mkdir -p "$GEM_HOME" "$BUNDLE_BIN" \
 && chmod 777 "$GEM_HOME" "$BUNDLE_BIN"
 
-RUN gem install bundler -v 2.5.4
+RUN gem install bundler -v 2.5.20
 RUN apt-get update
 RUN apt-get -y install curl
 RUN apt-get install -my gnupg
@@ -102,7 +102,7 @@ RUN apt-get update
 RUN apt-get install -y openssl libpq-dev build-essential libcurl4-openssl-dev software-properties-common
 
 # Download & extract & make libsodium
-ENV LIBSODIUM_VERSION 1.0.18
+ENV LIBSODIUM_VERSION 1.0.20
 RUN apt-get install build-essential
 RUN \
     mkdir -p /tmpbuild/libsodium && \
