@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM ubuntu:24.04 AS builder
 
 ENV MIRROR="mirrors.ocf.berkeley.edu"
 
@@ -128,8 +128,14 @@ RUN apt-get update
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -y install postgresql-15
 
+FROM ubuntu:24.04
+
+COPY --from=builder /usr/local/ /usr/local/
+
 # Add AWS CLI
-RUN apt-get -u install unzip
+RUN apt-get update
+RUN apt-get -u install unzip curl -y
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 RUN unzip awscliv2.zip
 RUN ./aws/install
+RUN apt-get purge -y unzip curl && apt-get -y autoremove --purge
