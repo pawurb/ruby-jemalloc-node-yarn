@@ -126,7 +126,7 @@ RUN wget https://www.postgresql.org/media/keys/ACCC4CF8.asc
 RUN apt-key add ACCC4CF8.asc
 RUN apt-get update
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get -y install postgresql-15
+RUN apt-get -y install postgresql-17
 
 # Add AWS CLI
 RUN apt-get -u install unzip
