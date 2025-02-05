@@ -69,7 +69,7 @@ RUN set -ex \
   && cd /usr/src/ruby \
   && { echo '#define ENABLE_PATH_CHECK 0'; echo; cat file.c; } > file.c.new && mv file.c.new file.c \
   && autoconf \
-  && ./configure --enable-shared --with-jemalloc --disable-install-doc \
+  && ./configure --with-jemalloc --disable-install-doc \
   && make -j"$(nproc)" \
   && make install \
   && apt-get purge -y --auto-remove $buildDeps \
@@ -87,23 +87,16 @@ ENV PATH $BUNDLE_BIN:$PATH
 RUN mkdir -p "$GEM_HOME" "$BUNDLE_BIN" \
   && chmod 777 "$GEM_HOME" "$BUNDLE_BIN"
 
-RUN gem install bundler -v 2.5.20
+RUN gem install bundler -v 2.6.2
 RUN apt-get update
-RUN apt-get -y install curl
-RUN apt-get install -my gnupg
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get update && apt-get -qqyy install nodejs yarn && rm -rf /var/lib/apt/lists/*
+RUN apt-get -y install curl gnupg
 
 RUN echo 'LC_ALL="en_US.UTF-8"' > /etc/default/locale
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN apt-get update
 RUN apt-get install -y openssl libpq-dev build-essential libcurl4-openssl-dev software-properties-common
 
 # Download & extract & make libsodium
 ENV LIBSODIUM_VERSION 1.0.20
-RUN apt-get install build-essential
 RUN \
   mkdir -p /tmpbuild/libsodium && \
   cd /tmpbuild/libsodium && \
@@ -129,7 +122,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get -y install postgresql-17
 
 # Add AWS CLI
-RUN apt-get -u install unzip
+RUN apt-get -y install unzip
 RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 RUN unzip awscliv2.zip
 RUN ./aws/install
@@ -165,12 +158,6 @@ RUN apt-get update \
   libxslt1-dev \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Added ~53.2M
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
-  imagemagick \
-  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 # Added ~3.32M
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -183,6 +170,7 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends \
   curl \
   wget \
+  git \
   gnupg \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
@@ -190,13 +178,11 @@ RUN echo 'LC_ALL="en_US.UTF-8"' > /etc/default/locale
 
 # Install nodejs (Added ~59.7M)
 RUN curl -sL https://deb.nodesource.com/setup_22.x | bash -
-
-# Install yarn (Added ~186M)
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get update \
-  && apt-get -y install yarn \
+RUN apt-get update && apt-get install -y nodejs yarn \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
 
 # Install postgresql-client (Added ~52.6MB)
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list
@@ -213,12 +199,6 @@ RUN apt-get update \
   make \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Probably no need to install the full build-essential
-# RUN apt-get update \
-#   && apt-get install -y --no-install-recommends \
-#   build-essential \
-#   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 # Probably need by gem packages (Added ~30.4MB)
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
@@ -226,13 +206,17 @@ RUN apt-get update \
   bison \
   libbz2-dev \
   libgdbm-dev \
+  libffi7 \
+  gnupg \
+  libssl3 \ 
+  libjemalloc2 \
   libglib2.0-dev \
   libncurses-dev \
   libreadline-dev \
   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Remove curl/wget/gnupg
-RUN apt-get remove -y curl wget gnupg \
+RUN apt-get remove -y curl wget \
   && apt-get autoremove --purge -y \
   && apt-get clean \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
@@ -250,6 +234,7 @@ ENV BUNDLE_PATH="$GEM_HOME" \
   BUNDLE_SILENCE_ROOT_WARNING=1 \
   BUNDLE_APP_CONFIG="$GEM_HOME"
 ENV PATH $BUNDLE_BIN:$PATH
+ENV LD_LIBRARY_PATH /usr/local/lib
 
 # Copy previously built ruby/aws/... (Added ~308MB)
 COPY --from=builder /usr/local /usr/local
