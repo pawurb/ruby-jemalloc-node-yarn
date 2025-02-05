@@ -185,6 +185,7 @@ RUN apt-get update \
   libglib2.0-0 \
   libncurses6 \
   libreadline8 \
+  libcurl4 \
   make \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
