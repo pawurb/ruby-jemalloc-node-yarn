@@ -176,6 +176,19 @@ RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get -y install nodejs yarn postgresql-client-17 \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Ruby dependencies
+RUN apt-get update \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  autoconf \
+  bison \
+  libgdbm6 \
+  libglib2.0-0 \
+  libncurses6 \
+  libreadline8 \
+  make \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+
 # skip installing gem documentation
 RUN mkdir -p /usr/local/etc \
   && { \
@@ -191,3 +204,5 @@ ENV BUNDLE_PATH="$GEM_HOME" \
 ENV PATH $BUNDLE_BIN:$PATH
 
 COPY --from=builder /usr/local /usr/local
+
+
