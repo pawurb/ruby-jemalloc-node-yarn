@@ -159,14 +159,13 @@ RUN apt-get update \
   procps \
   zlib1g \
   libjemalloc2 \
-  imagemagick \
   gnupg \
   wget \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN echo 'LC_ALL="en_US.UTF-8"' > /etc/default/locale
 
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_22.x | bash -
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list
@@ -179,16 +178,12 @@ RUN apt-get update \
 # Ruby dependencies
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-  autoconf \
-  bison \
-  libgdbm6 \
-  libglib2.0-0 \
-  libncurses6 \
-  libreadline8 \
-  libcurl4 \
-  make \
+  build-essential \
+  zlib1g-dev \
+  libjemalloc-dev \
+  libpq-dev \ 
+  libyaml-dev \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-
 
 # skip installing gem documentation
 RUN mkdir -p /usr/local/etc \
