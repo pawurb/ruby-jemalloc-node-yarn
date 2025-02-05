@@ -69,7 +69,7 @@ RUN set -ex \
   && cd /usr/src/ruby \
   && { echo '#define ENABLE_PATH_CHECK 0'; echo; cat file.c; } > file.c.new && mv file.c.new file.c \
   && autoconf \
-  && ./configure --with-jemalloc --disable-install-doc \
+  && ./configure --enable-shared --with-jemalloc --disable-install-doc \
   && make -j"$(nproc)" \
   && make install \
   && apt-get purge -y --auto-remove $buildDeps \
@@ -142,53 +142,100 @@ RUN sed -i "s|deb.debian.org|$MIRROR|g" /etc/apt/sources.list \
   && apt-get update \
   && apt-get -y upgrade \
   && apt-get -y autoremove --purge \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Added ~38.8M
 RUN apt-get update \
   && apt-get install -y --no-install-recommends \
   bzip2 \
+  libffi-dev \
+  libssl-dev \
+  libyaml-dev \
+  libpq-dev \
+  procps \
+  zlib1g-dev \
+  libjemalloc-dev \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Added ~89.2M (depends on some font related packages)
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+  libxml2-dev \
+  libxml2 \
+  libxslt1-dev \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Added ~53.2M
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+  imagemagick \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Added ~3.32M
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
   ca-certificates \
   openssl \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Added ~9.87M
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
   curl \
-  libffi7 \
-  libssl3 \
-  libyaml-0-2 \
-  libxml2 \
-  libpq5 \
-  libxslt1.1 \
-  procps \
-  zlib1g \
-  libjemalloc2 \
-  imagemagick \
-  gnupg \
   wget \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  gnupg \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN echo 'LC_ALL="en_US.UTF-8"' > /etc/default/locale
 
+# Install nodejs (Added ~59.7M)
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash -
+
+# Install yarn (Added ~186M)
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get update \
+  && apt-get -y install yarn \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Install postgresql-client (Added ~52.6MB)
 RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ jammy-pgdg main" > /etc/apt/sources.list.d/PostgreSQL.list
-RUN wget https://www.postgresql.org/media/keys/ACCC4CF8.asc
-RUN apt-key add ACCC4CF8.asc
+RUN wget https://www.postgresql.org/media/keys/ACCC4CF8.asc && apt-key add ACCC4CF8.asc
 RUN apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get -y install nodejs yarn postgresql-client-17 \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  && apt-get -y install postgresql-client-17 \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Ruby dependencies
+# Install gcc (required by gem package like bigdecimal) (Added ~138MB)
 RUN apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+  && apt-get install -y --no-install-recommends \
   autoconf \
-  bison \
-  libgdbm6 \
-  libglib2.0-0 \
-  libncurses6 \
-  libreadline8 \
-  libcurl4 \
+  gcc \
   make \
-  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+# Probably no need to install the full build-essential
+# RUN apt-get update \
+#   && apt-get install -y --no-install-recommends \
+#   build-essential \
+#   && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Probably need by gem packages (Added ~30.4MB)
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends \
+  libcurl4-openssl-dev \
+  bison \
+  libbz2-dev \
+  libgdbm-dev \
+  libglib2.0-dev \
+  libncurses-dev \
+  libreadline-dev \
+  && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Remove curl/wget/gnupg
+RUN apt-get remove -y curl wget gnupg \
+  && apt-get autoremove --purge -y \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # skip installing gem documentation
 RUN mkdir -p /usr/local/etc \
@@ -204,6 +251,5 @@ ENV BUNDLE_PATH="$GEM_HOME" \
   BUNDLE_APP_CONFIG="$GEM_HOME"
 ENV PATH $BUNDLE_BIN:$PATH
 
+# Copy previously built ruby/aws/... (Added ~308MB)
 COPY --from=builder /usr/local /usr/local
-
-
